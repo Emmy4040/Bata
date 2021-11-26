@@ -1,1 +1,1 @@
-# CourseW1 github pages link: https://github.com/Emmy4040/IndividualCoursework.git
+# CourseW1 github pages link: https://emmy4040.github.io/bata/coursework1/index.html
