@@ -69,7 +69,7 @@ let lessons = [
         "location": "Shanghai",
         "price": 1800,
         "availableInventory": 5,
-        "image": "images/sports.jpg"
+        "image": "images/new language.jfif"
     },
     {
         "id": 010,
