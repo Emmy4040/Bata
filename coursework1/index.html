@@ -1,20 +1,15 @@
 <!DOCTYPE html>
 <html>
 
-
-    
-    
-    <head>
-    <title>After School Lessons</title>
-    <script src="https://unpkg.com/vue"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
+<head>
+    <title>After School Work</title>
     <link rel="stylesheet" href="design.css">
-    <script src="products.js"></script>
+    
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js"></script>
+
 </head>
 
-
-    
-    <body>
+<body>
     <div id="app">
         <header>
             <h1 v-text="sitename"></h1>
@@ -34,8 +29,6 @@
                         <li><button v-on:click="type = 'Location'">Location</button></li>
                     </ul>
                 </aside>
-                
-                
                 <main>
                     <div v-if='!showProduct'>
                         <div class="title-bar">
@@ -49,20 +42,20 @@
 
                         <!-- lessons-->
                         <div class="lessons">
-                            <div v-for="(lessons, index) in sortedLessons" :key="`lesson--${index}`"
+                            <div v-for="lesson in lessons"
                                 class="lessons__item">
                                 <h2>
-                                    <p>Subject: {{ lessons.subject }}</p>
+                                    <p>Subject: {{ lesson.subject }}</p>
                                 </h2>
                                 <figure>
-                                    <img v-bind:src="lessons.image" width="250" height="200">
+                                    <img v-bind:src="lesson.image" width="250" height="200">
                                 </figure>
-                                <p>Location: {{ lessons.location }}</p>
-                                <p>Price: {{ lessons.price }}</p>
-                                <p>Spaces: {{lessons.availableInventory}}</p>
-                                <button v-on:click='addToCart(lessons)' :disabled="!lessons.availableInventory">Add to
+                                <p>Location: {{ lesson.location }}</p>
+                                <p>Price: {{ lesson.price }}</p>
+                                <p>Spaces: {{lesson.availableInventory}}</p>
+                                <button v-on:click='addToCart(lesson)' :disabled="!lesson.availableInventory">Add to
                                     cart</button>
-                                <span v-if="lessons.availableInventory">{{'Left '+ lessons.availableInventory}}</span>
+                                <span v-if="lesson.availableInventory">{{'Left '+ lesson.availableInventory}}</span>
                                 <span v-else>This lesson is fully booked!</span>
                             </div>
                          </div>
@@ -113,7 +106,7 @@
                                         <label for="name">Phone Number</label>
                                         <input v-model="user.number" type="tel" required>
                                     </div>
-                                    <input type="submit" value="Checkout">
+                                    <input type="submit" @click="submit" onclick="return false" value="Checkout">
                                 </form>
                             </div>
                         </div>
@@ -123,98 +116,114 @@
         </div>
     </div>
     </div>
-    <script type="text/javascript">
-        const webstore = new Vue({
-            el: '#app',
-            data: {
-                sitename: 'After School Lessons',
-                lessons: [],
-                cart: [],
-                showProduct: false,
-                order: {
-                    firstName: '',
-                    lastName: '',
-                },
-                sort: 'ascending',
-                type: '',
-                user: {
-                    name: '',
-                    number: ''
-                }
-            },
-            methods: {
-                addToCart(lesson) {
-                    this.lessons.find(item => item.id == lesson.id).availableInventory -= 1;
-                    this.cart.push({ cartId: (this.cart.length + 1), ...lesson });
-                    // console.log('adding to cart', lesson.id)
-                },
-                removeFromCart(lesson) {
-                    if (confirm('You are about to delete this!')) {
-                        this.cart = [...this.cart].filter(item => item.cartId != lesson.cartId)
-                    }
-                },
-                showCheckout() {
-                    this.showProduct = !this.showProduct;
-                },
-                submit() {
-                    if (this.phonenumber(this.user.number)) {
-                        alert('Your Lesson has been booked.')
-                        // console.log(this.user);
-                    }
-                },
-                phonenumber(number) {
-                    if ((number.match(phoneno))) {
-                        return true;
-                    }
-                }
-            },
-            computed: {
-                total() {
-                    return this.cart.length > 0 ? this.cart.map(item => item.price).reduce((acc, cur) => acc + cur) : 0;
-                },
-                //Everything here is for sorting lessons
-                sortedLessons() {
-                    switch (this.type) {
-                        case 'subject':
-                            return this.lessons.sort((a, b) => {
-                                switch (this.sort) {
-                                    case 'ascending':
-                                        return a.subject.toUpperCase() > b.subject.toUpperCase() ? 1 : -1;
-                                    default:
-                                        return a.subject.toUpperCase() < b.subject.toUpperCase() ? 1 : -1;
-                                }
-                            })
-                        case 'location':
-                            return this.lessons.sort((a, b) => {
-                                switch (this.sort) {
-                                    case 'ascending':
-                                        return a.location.toUpperCase() > b.location.toUpperCase() ? 1 : -1;
-                                    default:
-                                        return a.location.toUpperCase() < b.location.toUpperCase() ? 1 : -1;
-                                }
-                            })
-                        case 'price':
-                            return this.lessons.sort((a, b) => {
-                                return this.sort == 'ascending' ? a.price - b.price : b.price - a.price;
-                            })
-                        case 'space':
-                            return this.lessons.sort((a, b) => {
-                                return this.sort == 'ascending' ? a.availableInventory - b.availableInventory : b.availableInventory - a.availableInventory;
-                            })
-                        default:
-                            return this.lessons.sort((a, b) => {
-                                return this.sort == 'ascending' ? a.id - b.id : b.id - a.id;
-                            })
-                    }
-                }
-            },
-            created() {
-                this.lessons = lessons
-            }
-        });
-    </script>
 </body>
-
-
-
+<script type="text/javascript">
+    const webstore = new Vue({
+        el: '#app',
+        data: {
+            sitename: 'After School Lessons',
+            lessons: [],
+            cart: [],
+            showProduct: false,
+            order: {
+                firstName: '',
+                lastName: '',
+            },
+            sort: 'ascending',
+            type: '',
+            user: {
+                name: '',
+                number: ''
+            }
+        },
+        created: async function(){
+            try {
+                let fetchLessons = await fetch("http://localhost:3000/collection/lessons")
+                this.lessons = await fetchLessons.json();
+            } catch (error) {
+                console.log(error);
+            }
+        },
+        methods: {
+            addToCart(lesson) {
+                this.lessons.find(item => item.id == lesson.id).availableInventory -= 1;
+                this.cart.push({ cartId: (this.cart.length + 1), ...lesson });
+                // console.log('adding to cart', lesson.id)
+            },
+            removeFromCart(lesson) {
+                if (confirm('You are about to delete this!')) {
+                    this.cart = [...this.cart].filter(item => item.cartId != lesson.cartId)
+                }
+            },
+            showCheckout() {
+                this.showProduct = !this.showProduct;
+            },
+            submit() {
+                let data = {
+                    name: this.user.name,
+                    phone: this.user.number,
+                    orders: this.cart
+                }
+                fetch('http://localhost:3000/collection/orders', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        mode: "cors",
+                        cache: "no-store",
+                        body: JSON.stringify(data),
+                    })
+                        .then(response => response.json())
+                        .catch((error) => {
+                            console.log(error);
+                        });
+            },
+            phonenumber(number) {
+                if ((number.match(phoneno))) {
+                    return true;
+                }
+            }
+        },
+        computed: {
+            total() {
+                return this.cart.length > 0 ? this.cart.map(item => item.price).reduce((acc, cur) => acc + cur) : 0;
+            },
+            //Everything here is for sorting lessons
+            sortedLessons() {
+                switch (this.type) {
+                    case 'subject':
+                        return this.lessons.sort((a, b) => {
+                            switch (this.sort) {
+                                case 'ascending':
+                                    return a.subject.toUpperCase() > b.subject.toUpperCase() ? 1 : -1;
+                                default:
+                                    return a.subject.toUpperCase() < b.subject.toUpperCase() ? 1 : -1;
+                            }
+                        })
+                    case 'location':
+                        return this.lessons.sort((a, b) => {
+                            switch (this.sort) {
+                                case 'ascending':
+                                    return a.location.toUpperCase() > b.location.toUpperCase() ? 1 : -1;
+                                default:
+                                    return a.location.toUpperCase() < b.location.toUpperCase() ? 1 : -1;
+                            }
+                        })
+                    case 'price':
+                        return this.lessons.sort((a, b) => {
+                            return this.sort == 'ascending' ? a.price - b.price : b.price - a.price;
+                        })
+                    case 'space':
+                        return this.lessons.sort((a, b) => {
+                            return this.sort == 'ascending' ? a.availableInventory - b.availableInventory : b.availableInventory - a.availableInventory;
+                        })
+                    default:
+                        return this.lessons.sort((a, b) => {
+                            return this.sort == 'ascending' ? a.id - b.id : b.id - a.id;
+                        })
+                }
+            }
+        }
+    });
+</script>
 </html>
